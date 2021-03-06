@@ -65,8 +65,15 @@ public class JwtTokenUtil implements Serializable {
 		Map<String, Object> claims = new HashMap<>();
 		
 		Collection<? extends GrantedAuthority> roles = userDetails.getAuthorities();
-		if(roles.contains(new SimpleGrantedAuthority("INSTRUCTOR"))) {
-			claims.put("isInstructor", true);
+		System.out.println(roles);
+		if(roles.contains(new SimpleGrantedAuthority("ROLE_INSTRUCTOR"))) {
+			claims.put("role", roles);
+		}
+		else if(roles.contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
+			claims.put("role", roles);
+		}
+		else {
+			claims.put("role", roles);
 		}
 				
 		return doGenerateToken(claims, userDetails.getUsername());
@@ -84,20 +91,23 @@ public class JwtTokenUtil implements Serializable {
 
 	public Boolean validateToken(String token, UserDetails userDetails) {
 		final String username = getUsernameFromToken(token);
+//		List<SimpleGrantedAuthority> roles = getRolesFromToken(token);
 		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+		
 	}
 	
-	public List<SimpleGrantedAuthority> getRolesFromToken(String token){
-		Claims claims=getAllClaimsFromToken(token);
-		List<SimpleGrantedAuthority> roles = null;
-		
-		Boolean isInstructor=(Boolean) claims.get("isInstructor");
-		
-		if(isInstructor!=null && isInstructor) {
-			roles = Arrays.asList(new SimpleGrantedAuthority("INSTRUCTOR"));	
-		}
-		
-		return roles;
-	}
+//	public List<SimpleGrantedAuthority> getRolesFromToken(String token){
+//		System.out.println("in getRoleFromToken method");
+//		Claims claims=getAllClaimsFromToken(token);
+//		List<SimpleGrantedAuthority> roles = null;
+//		
+//		String isInstructor= (String) claims.get("hasRole");
+//		
+//		if(isInstructor!=null && isInstructor=="INSTRUCTOR") {
+//			roles = Arrays.asList(new SimpleGrantedAuthority("INSTRUCTOR"));	
+//		}
+//		
+//		return roles;
+//	}
 	
 }
